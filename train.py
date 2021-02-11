@@ -273,13 +273,14 @@ class HousePriceFlow2(FlowSpec):
         ensembleModel = LinearRegressionStep()(combinedPredictions, y)
         model = Model(x, ensembleModel, y)
         model.fit(self.trainDF, self.trainDF['SalePrice'])
-        self.serialized_model = cloudpickle.dumps(model)
+        self.model = {
+            'model.pkl': cloudpickle.dumps(model)
+        }
         self.next(self.end)
-    
+        
     @step
     def end(self):
-        "workflow end"
-        print("Model training done")
+        print("done")
 
 
 if __name__ == '__main__':
