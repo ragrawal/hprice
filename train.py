@@ -22,7 +22,6 @@ def pip(libraries):
         def wrapper(*args, **kwargs):
             import subprocess
             import sys
-
             for library, version in libraries.items():
                 print('Pip Install:', library, version)
                 subprocess.run([sys.executable, '-m', 'pip',
@@ -74,9 +73,6 @@ class HousePriceFlow2(FlowSpec):
         self.trainDF = pd.read_csv(io.StringIO(self.train_data))
         self.next(self.train)
 
-    @conda(libraries={
-        
-    })
     @pip(libraries={
         'xgboost': '1.3.3',
         'sklearn-pandas': '2.0.4',
@@ -273,8 +269,13 @@ class HousePriceFlow2(FlowSpec):
         ensembleModel = LinearRegressionStep()(combinedPredictions, y)
         model = Model(x, ensembleModel, y)
         model.fit(self.trainDF, self.trainDF['SalePrice'])
-        self.model = {
-            'model.pkl': cloudpickle.dumps(model)
+        self.artifact = {
+            'model.pkl': cloudpickle.dumps(model),
+            'environment': {
+                'pip': {
+                    
+                }
+            }
         }
         self.next(self.end)
         
